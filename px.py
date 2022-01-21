@@ -35,8 +35,6 @@ def get_vig(sat, verbose=0):
                         print_verbose(f'{abs(variable_1)} {abs(variable_2)}', verbose, 1)
                         vig.add_edge(abs(variable_1), abs(variable_2))
 
-    assert (sat.n == vig.number_of_nodes())
-
     return vig
 
 
@@ -79,10 +77,6 @@ def decompose_problem(sat, p1, p2, p1_unsat, p2_unsat, init_method, verbose=0):
 
     if len(p1) != len(p2):
         raise ValueError(f'P1 and P2 must be the same lengths.  Got lengths {len(p1)} and {len(p2)}')
-
-    if len(p1) != sat.n:
-        raise ValueError(f'Solutions don\'t have the same number of variables as problem.  '
-                         f'Got solutions of length {len(p1)} and n={sat.n}')
 
     swapc, var = init_swapc_var(sat, p1, p2, p1_unsat, p2_unsat, init_method, verbose)
     swapc, var, iterations = grow_swapc_var(sat, p1, p2, swapc, var, verbose)
@@ -196,11 +190,8 @@ def partition_crossover(sat, decomposed_vig, p1, p2, none_fill, verbose=0):
     if none_fill not in ['p1', 'p2']:
         raise ValueError(f'Invalid method for filling None assignments: {none_fill}')
 
-    if nx.number_connected_components(decomposed_vig) == 1:
-        if sat.score_solution(p1) >= sat.score_solution(p2):
-            return p1
-        else:
-            return p2
+    if len(p1) != len(p2):
+        raise ValueError(f'P1 and P2 must be the same lengths.  Got lengths {len(p1)} and {len(p2)}')
 
     new_solution = np.array([None] * len(p1))
 

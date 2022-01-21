@@ -1,9 +1,12 @@
+from sat import read_sat_problem
+
 import math
 import numpy as np
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objs as go
 import streamlit as st
+from streamlit_agraph import agraph, Node, Edge, Config
 
 
 def scatter_3d(data, metrics=None):
@@ -92,7 +95,7 @@ def log_normal(x, mu, s2):
     return (1 / (x * math.sqrt(2 * math.pi * s2))) * math.exp(-0.5 * math.pow(math.log(x-mu), 2) / s2)
 
 
-def main():
+def scatter_plots():
 
     data = pd.read_csv('./Honors Option/results/graph_decomposition.csv', index_col=0)
     data = data[['trial', 'problem', 'm', 'n', 'm / n', 'm\'', 'n\'',  'm / m\'','dq', 'dq\'', 'dq / dq\'']]
@@ -114,6 +117,40 @@ def main():
     scatter_3d(data, metrics)
 
     #prob_dist()
+
+
+def graphs():
+
+    sat = read_sat_problem('./toy_sat_problems/toy_sat1.cnf')
+
+    edges = []
+    nodes = []
+    node_size = 750
+
+    for i in range(sat.m):
+        if len(sat.clauses[i]) == 1:
+            nodes.append(Node(id=abs(list(sat.clauses[i])[0]), size=node_size, renderLabel=True))
+
+        else:
+            # K-bounded.  For example, in MAX-K-SAT, loops j and k together will only run (K choose 2) times
+            for variable_1 in sat.clauses[i]:
+                for variable_2 in sat.clauses[i]:
+                    if variable_1 < variable_2:
+                        nodes.append(Node(id=abs(variable_1), size=node_size, renderLabel=True))
+                        nodes.append(Node(id=abs(variable_2), size=node_size, renderLabel=True))
+                        edges.append(Edge(source=abs(variable_1), target=abs(variable_2)))
+
+    config = Config(width=800,
+                    height=800,
+                    directed=False,
+                    collapsible=False,
+                    panAndZoom=False,
+                    staticGraph=False)
+    agraph(nodes=nodes, edges=edges, config=config)
+
+
+def main():
+    graphs()
 
 
 if __name__ == '__main__':

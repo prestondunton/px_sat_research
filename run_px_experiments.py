@@ -56,14 +56,10 @@ def run_experiment(sat_file, ubc_file):
         print('Performing PX')
         new_solution = partition_crossover(sat, decomposed_vig, p1, p2, none_fill='p1')
         ns_score = sat.score_solution(new_solution)
-        #assert (ns_score >= p1_score)
-        #assert (ns_score >= p2_score)
 
         print('Performing PX*')
         new_solution_prime = partition_crossover(decomposed_sat, decomposed_vig_prime, p1, p2, none_fill='p1')
         ns_score_prime = sat.score_solution(new_solution_prime)
-        #assert (ns_score_prime >= p1_score)
-        #assert (ns_score_prime >= p2_score)
 
         results = results.append({'P1_score': p1_score,
                                   'P2_score': p2_score,
@@ -162,8 +158,8 @@ def main():
                 result = run_experiment(sat_path, ubc_path)
                 result = format_results(result, ratios=True)
                 result.to_csv(csv_path)
-            except Exception:
-                pass
+            except Exception as e:
+                print(e)
 
 
 if __name__ == '__main__':
