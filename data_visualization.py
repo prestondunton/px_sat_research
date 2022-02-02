@@ -10,7 +10,6 @@ from streamlit_agraph import agraph, Node, Edge, Config
 
 
 def scatter_3d(data, metrics=None):
-
     columns = st.columns(4)
     with columns[0]:
         x_col = st.selectbox(label='X', options=data.columns)
@@ -23,8 +22,8 @@ def scatter_3d(data, metrics=None):
 
     data['size'] = 1
     fig = px.scatter_3d(data, x=x_col, y=y_col, z=z_col, size='size', size_max=10, color=color_col,
-    #                    range_z=(0,15),
-                    #    range_color=(metrics[color_col]['min'], metrics[color_col]['max']),
+                        # range_z=(0,15),
+                        # range_color=(metrics[color_col]['min'], metrics[color_col]['max']),
                         hover_data={'problem': True,
                                     'trial': True,
                                     x_col: True,
@@ -36,8 +35,8 @@ def scatter_3d(data, metrics=None):
 
 
 def prob_dist():
-    #s = np.linspace(0, 2 * np.pi, 240)
-    #t = np.linspace(0, np.pi, 240)
+    # s = np.linspace(0, 2 * np.pi, 240)
+    # t = np.linspace(0, np.pi, 240)
 
     s = np.linspace(-5, 5, 100)
     t = np.linspace(-5, 5, 100)
@@ -47,15 +46,14 @@ def prob_dist():
     st.write(tGrid)
     st.write(sGrid)
 
-    #r = 2 + np.sin(7 * sGrid + 5 * tGrid)  # r = 2 + sin(7s+5t)
-    #x = r * np.cos(sGrid) * np.sin(tGrid)  # x = r*cos(s)*sin(t)
-    #y = r * np.sin(sGrid) * np.sin(tGrid)  # y = r*sin(s)*sin(t)
-    #z = r * np.cos(tGrid)  # z = r*cos(t)
+    # r = 2 + np.sin(7 * sGrid + 5 * tGrid)  # r = 2 + sin(7s+5t)
+    # x = r * np.cos(sGrid) * np.sin(tGrid)  # x = r*cos(s)*sin(t)
+    # y = r * np.sin(sGrid) * np.sin(tGrid)  # y = r*sin(s)*sin(t)
+    # z = r * np.cos(tGrid)  # z = r*cos(t)
 
     x = tGrid
     y = sGrid
     z = log_normal(x, 0, 1)
-
 
     surface = go.Surface(x=x, y=y, z=z)
     data = [surface]
@@ -89,16 +87,17 @@ def prob_dist():
 
 
 def normal(x, mu, s2):
-    return (1 / math.sqrt(2 * math.pi * s2)) * math.exp(-0.5 * math.pow((x-mu) / s2, 2))
+    return (1 / math.sqrt(2 * math.pi * s2)) * math.exp(-0.5 * math.pow((x - mu) / s2, 2))
+
 
 def log_normal(x, mu, s2):
-    return (1 / (x * math.sqrt(2 * math.pi * s2))) * math.exp(-0.5 * math.pow(math.log(x-mu), 2) / s2)
+    return (1 / (x * math.sqrt(2 * math.pi * s2))) * math.exp(-0.5 * math.pow(math.log(x - mu), 2) / s2)
 
 
 def scatter_plots():
-
-    data = pd.read_csv('./Honors Option/results/graph_decomposition.csv', index_col=0)
-    data = data[['trial', 'problem', 'm', 'n', 'm / n', 'm\'', 'n\'',  'm / m\'','dq', 'dq\'', 'dq / dq\'']]
+    data = pd.read_csv('./results/graph_decomposition.csv', index_col=0)
+    data = data[['trial', 'problem', 'm', 'n', 'm / n', 'm*', 'n*', 'n / n*', 'm / m*', 'q', 'q*', 'q / q*',
+                 'iterations', 'P1%SAT']]
     for column in data.columns:
         if data[column].dtype == 'float64':
             data[f'log({column})'] = np.log(data[column])
@@ -110,18 +109,17 @@ def scatter_plots():
         np.random.shuffle(problems)
         problems = problems[0:30]
         data = data[data['problem'].isin(problems)]
-        #data.sort_values(by=['m / n'], inplace=True)
+        # data.sort_values(by=['m / n'], inplace=True)
 
     st.dataframe(data)
 
     scatter_3d(data, metrics)
 
-    #prob_dist()
+    # prob_dist()
 
 
 def graphs():
-
-    sat = read_sat_problem('./toy_sat_problems/toy_sat1.cnf')
+    sat = read_sat_problem('./toy_sat_problems/paper_example.cnf')
 
     edges = []
     nodes = []
@@ -150,7 +148,8 @@ def graphs():
 
 
 def main():
-    graphs()
+    # graphs()
+    scatter_plots()
 
 
 if __name__ == '__main__':

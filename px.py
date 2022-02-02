@@ -5,6 +5,17 @@ import networkx as nx
 import numpy as np
 
 
+class EmptySWAPCError(Exception):
+    """Exception raised if SWAPC is initialized to be empty.
+
+    Attributes:
+        message -- explanation of the error
+    """
+    def __init__(self):
+        self.message = 'SWAPC is initialized to be empty.  Preprocessor failed.'
+        super().__init__(self.message)
+
+
 def get_vig(sat, verbose=0):
     """
     Takes in a SAT problem and returns its Variable Interaction Graph (VIG)
@@ -117,7 +128,7 @@ def init_swapc_var(sat, p1, p2, p1_unsat, p2_unsat, method, verbose=0):
     print_verbose(f'[3,4] Init SWAPC: {swapc}', verbose, 2)
 
     if len(swapc) == 0:
-        raise ValueError('SWAPC is initialized to be empty.  Preprocessor failed.')
+        raise EmptySWAPCError()
 
     # Step 5
     var = get_unique_vars(sat.clauses[list(swapc)])
